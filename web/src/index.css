@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Day shift: calm white/grey, colour only where action is needed (design doc §11.4). */
+:root,
+[data-theme='day'] {
+  --bg: 241 244 246;
+  --panel: 255 255 255;
+  --raised: 247 249 250;
+  --line: 223 229 234;
+  --ink: 14 22 31;
+  --muted: 84 98 112;
+  --faint: 146 158 170;
+  --pulse: 13 148 136;
+  --crash: 214 40 40;
+  --escalate: 214 92 10;
+  --action: 120 70 230;
+  --measure: 8 128 196;
+  --calm: 22 140 96;
+  --amber: 206 138 0;
+  --s-naive: 214 40 40;   /* chart series — validated (dataviz validator, light) */
+  --s-wp: 13 148 136;
+  color-scheme: light;
+}
+
+/* Night shift: low-light ward, dim and glare-free. */
+[data-theme='night'] {
+  --bg: 9 13 19;
+  --panel: 16 22 30;
+  --raised: 22 29 39;
+  --line: 37 47 60;
+  --ink: 228 235 241;
+  --muted: 146 160 175;
+  --faint: 94 108 124;
+  --pulse: 45 212 191;
+  --crash: 248 84 84;
+  --escalate: 251 146 60;
+  --action: 167 139 250;
+  --measure: 56 189 248;
+  --calm: 52 211 153;
+  --amber: 251 191 36;
+  --s-naive: 229 72 77;   /* chart series — validated for the dark surface */
+  --s-wp: 15 159 144;
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  font-feature-settings: 'ss01', 'cv11';
+}
+:lang(hi) body, [lang='hi'] { font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif; }
+:lang(te) body, [lang='te'] { font-family: 'Noto Sans Telugu', 'Plus Jakarta Sans', sans-serif; }
+
+.num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* Glove-friendly tap targets (≥ 56 px for primary actions). */
+.tap { min-height: 56px; }
+
+.panel { @apply bg-panel border border-line rounded-2xl; }
+.chip { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold; }
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none; }
+.btn-primary { @apply btn bg-pulse text-white hover:brightness-110; }
+.btn-ghost { @apply btn border border-line bg-panel hover:bg-raised; }
+.btn-crash { @apply btn bg-crash text-white hover:brightness-110; }
+.focus-ring { @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-pulse/60; }
+
+/* ECG trace in the header */
+@keyframes ecg-draw { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
+.ecg-line { stroke-dasharray: 240; animation: ecg-draw 1.8s linear infinite; }
+
+/* Naïve-mode alarm flashing */
+@keyframes alarm-red { 0%, 100% { background-color: rgb(var(--crash) / 0.16); } 50% { background-color: rgb(var(--crash) / 0.42); } }
+@keyframes alarm-amber { 0%, 100% { background-color: rgb(var(--amber) / 0.12); } 50% { background-color: rgb(var(--amber) / 0.34); } }
+.alarm-red { animation: alarm-red 0.9s ease-in-out infinite; }
+.alarm-amber { animation: alarm-amber 1.3s ease-in-out infinite; }
+
+/* Crash banner pulse */
+@keyframes crash-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(var(--crash) / 0.55); } 50% { box-shadow: 0 0 0 10px rgb(var(--crash) / 0); } }
+.crash-glow { animation: crash-glow 1.4s ease-out infinite; }
+
+/* Calm "breathing" empty state */
+@keyframes breathe { 0%, 100% { transform: scale(0.92); opacity: 0.55; } 50% { transform: scale(1.06); opacity: 1; } }
+.breathe { animation: breathe 5s ease-in-out infinite; }
+
+/* Pipeline flow dots */
+@keyframes flow { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+
+.scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ecg-line, .alarm-red, .alarm-amber, .crash-glow, .breathe { animation: none !important; }
+}
